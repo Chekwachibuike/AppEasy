@@ -1,0 +1,66 @@
+**Role:** Software Engineer Intern (Next.js / Node.js)
+
+**Expected Time:** 3–5 hours
+
+**Allowed Tools:** AI tools (e.g., ChatGPT, GitHub Copilot), documentation, Stack Overflow — **just be transparent about what was AI-assisted.**
+
+**Goal:** We want to see how you think, learn, and ship. Treat this like a real product challenge at AppEasy.
+
+---
+
+### ⚙️ Scenario
+
+AppEasy helps users automatically apply for jobs, track their application progress, and improve their resumes using AI.
+
+We want you to build a **Mini Job Tracker** web app — similar to a stripped-down version of one AppEasy feature.
+
+---
+
+### ✅ Your Challenge
+
+Build a full-stack app with the following features:
+
+### 🧭 Frontend (Next.js + TypeScript)
+
+- A form to **add a job application**, including:
+    - Job Title
+    - Company Name
+    - Application Link
+    - Status (e.g., Applied, Interviewing, Rejected, Offer)
+- A dashboard that shows the list of added job applications in a table
+- Ability to **edit** or **delete** a job entry
+
+### 🧰 Backend (Node.js or API Routes in Next.js)
+
+- Store all job applications in-memory or a simple local JSON file (no database required)
+- Expose RESTful endpoints:
+    - `GET /jobs`
+    - `POST /jobs`
+    - `PUT /jobs/:id`
+    - `DELETE /jobs/:id`
+
+### 🤖 AI Bonus (Encouraged)
+
+- Add a feature that lets the user **paste a job description** and click “Analyze”
+- Use **OpenAI (or ChatGPT)** to:
+    - Return a summary of the job
+    - Suggest 3 skills the user should highlight in their resume
+
+You can use any OpenAI model (or even paste your prompt + result manually if you don’t have an API key).
+
+---
+
+### 📦 Deliverables
+
+1. **GitHub repo** with clear README:
+    - Explain how to run the app
+
+---
+
+### 🔍 What We’re Evaluating
+
+- Code quality and structure (TypeScript encouraged)
+- Ability to build full-stack apps and connect frontend/backend
+- Creative use of AI
+- Attention to detail and UX polish
+- Resourcefulness and learning agility
