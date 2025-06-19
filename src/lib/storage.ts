@@ -18,6 +18,7 @@ export class MemStorage implements IStorage {
   }
 
   async getAllJobs(): Promise<Job[]> {
+    // Sort jobs by applied date, newest first
     return Array.from(this.jobs.values()).sort((a, b) => 
       new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime()
     )
@@ -42,16 +43,12 @@ export class MemStorage implements IStorage {
 
   async updateJob(id: number, updateData: Partial<UpdateJob>): Promise<Job | undefined> {
     const existingJob = this.jobs.get(id)
-    if (!existingJob) {
-      return undefined
-    }
-
+    if (!existingJob) return undefined
     const updatedJob: Job = {
       ...existingJob,
       ...updateData,
-      id, // Ensure id doesn't change
+      id,
     }
-
     this.jobs.set(id, updatedJob)
     return updatedJob
   }

@@ -1,7 +1,8 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-
+import { useTheme } from 'next-themes';
+import { Sun, Moon } from 'lucide-react';
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
@@ -52,5 +53,19 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   }
 )
 Button.displayName = "Button"
+
+export function DarkModeToggle() {
+  const { theme, setTheme } = useTheme();
+  return (
+    <button
+      type="button"
+      aria-label="Toggle dark mode"
+      className="ml-2 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+    >
+      {theme === 'dark' ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-800" />}
+    </button>
+  );
+}
 
 export { Button, buttonVariants }

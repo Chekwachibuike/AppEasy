@@ -1,35 +1,32 @@
 import { spawn } from 'child_process';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { platform } from 'os';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const projectRoot = join(__dirname, '..');
+// Determine platform for correct Next.js binary
+const isWin = platform() === 'win32';
+const nextCommand = isWin ? '.\\node_modules\\.bin\\next.cmd' : './node_modules/.bin/next';
 
-console.log('Starting Next.js development server...');
-
-// Start Next.js development server on port 5000 as expected by workflow
-const nextDev = spawn('npx', ['next', 'dev', '--port', '5000', '--hostname', '0.0.0.0'], {
-  cwd: projectRoot,
-  stdio: 'inherit'
-});
+// Start Next.js dev server on port 5000
+const nextDev = spawn(
+  nextCommand,
+  ['dev', '--port', '5000', '--hostname', '0.0.0.0'],
+  {
+    stdio: 'inherit',
+    shell: isWin
+  }
+);
 
 nextDev.on('close', (code) => {
-  console.log(`Next.js dev server exited with code ${code}`);
   process.exit(code || 0);
 });
 
 nextDev.on('error', (error) => {
-  console.error('Failed to start Next.js dev server:', error);
   process.exit(1);
 });
 
 process.on('SIGINT', () => {
-  console.log('Received SIGINT, shutting down gracefully...');
   nextDev.kill('SIGINT');
 });
 
 process.on('SIGTERM', () => {
-  console.log('Received SIGTERM, shutting down gracefully...');
   nextDev.kill('SIGTERM');
 });

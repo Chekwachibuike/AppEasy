@@ -58,12 +58,20 @@ export function useUpdateJob() {
 
 export function useDeleteJob() {
   const queryClient = useQueryClient()
+  const { toast } = require('@/hooks/use-toast')
   
   return useMutation({
     mutationFn: async (id: number) => {
       const response = await fetch(`/api/jobs/${id}`, {
         method: "DELETE",
       })
+      if (response.status === 404) {
+        toast?.toast({
+          title: 'Already deleted',
+          description: 'This job was already removed.',
+        })
+        return
+      }
       if (!response.ok) {
         throw new Error('Failed to delete job')
       }

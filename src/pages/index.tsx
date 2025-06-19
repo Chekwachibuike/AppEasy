@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -13,6 +13,11 @@ import { useToast } from '@/hooks/use-toast'
 import { insertJobSchema, aiAnalysisSchema } from '@shared/schema'
 import { useJobs, useCreateJob, useAnalyzeJob, useUpdateJob, useDeleteJob } from '@/hooks/use-jobs'
 import type { InsertJob, AIAnalysisRequest, Job, AIAnalysisResponse } from '@shared/schema'
+import * as Dialog from '@radix-ui/react-dialog'
+import { useRouter } from 'next/router'
+import dynamic from 'next/dynamic'
+
+const DarkModeToggle = dynamic(() => import('@/components/ui/button').then(mod => mod.DarkModeToggle), { ssr: false })
 
 // Badge component for status
 function Badge({ children, className }: { children: React.ReactNode, className?: string }) {
@@ -37,11 +42,14 @@ export default function Dashboard() {
   const [aiResults, setAIResults] = useState<AIAnalysisResponse | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
+  const [editJob, setEditJob] = useState<Job | null>(null)
+  const [localJobs, setLocalJobs] = useState<Job[] | null>(null)
   
   const createJobMutation = useCreateJob()
   const analyzeJobMutation = useAnalyzeJob()
   const updateJobMutation = useUpdateJob()
   const deleteJobMutation = useDeleteJob()
+  const router = useRouter()
 
   const jobForm = useForm<InsertJob>({
     resolver: zodResolver(insertJobSchema),
@@ -59,6 +67,10 @@ export default function Dashboard() {
       jobDescription: "",
     },
   })
+
+  useEffect(() => {
+    setLocalJobs(jobs ?? null)
+  }, [jobs])
 
   const onSubmitJob = async (data: InsertJob) => {
     try {
@@ -95,6 +107,7 @@ export default function Dashboard() {
     if (window.confirm("Are you sure you want to delete this job application?")) {
       try {
         await deleteJobMutation.mutateAsync(jobId)
+        setLocalJobs((prev) => (prev ?? jobs)?.filter(job => job.id !== jobId) || [])
         toast({
           title: "Success!",
           description: "Job application deleted successfully.",
@@ -128,7 +141,7 @@ export default function Dashboard() {
     offer: { color: "bg-green-100 text-green-700", label: "Offer" },
   }
 
-  const filteredJobs = jobs?.filter(job => {
+  const filteredJobs = (localJobs ?? jobs)?.filter(job => {
     const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          job.company.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesStatus = statusFilter === "all" || job.status === statusFilter
@@ -177,7 +190,7 @@ export default function Dashboard() {
   return (
     <>
       <Head>
-        <title>Job Tracker - Manage Your Applications</title>
+        <title>AppEasy - Manage Your Applications</title>
         <meta name="description" content="Track your job applications with AI-powered analysis and insights" />
       </Head>
 
@@ -190,13 +203,27 @@ export default function Dashboard() {
                 <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
                   <Briefcase className="text-white w-4 h-4" />
                 </div>
-                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Job Tracker</h1>
+                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">AppEasy</h1>
               </div>
               <div className="flex items-center space-x-4">
                 <span className="text-sm text-gray-600 dark:text-gray-300">Welcome back!</span>
                 <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
                   <User className="text-blue-600 dark:text-blue-300 w-4 h-4" />
                 </div>
+                <DarkModeToggle />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => {
+                    localStorage.removeItem('loggedIn');
+                    localStorage.removeItem('userEmail');
+                    toast({ title: 'Logged out', description: 'You have been logged out.' });
+                    router.replace('/login');
+                  }}
+                >
+                  Log out
+                </Button>
               </div>
             </div>
           </div>
@@ -294,7 +321,7 @@ export default function Dashboard() {
                         control={jobForm.control}
                         name="status"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="mb-4">
                             <FormLabel>Status</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
@@ -367,40 +394,38 @@ export default function Dashboard() {
                     </Form>
 
                     {/* AI Results Display */}
-                    {showAIResults && aiResults && (
-                      <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                        <div className="flex items-center justify-between mb-4">
-                          <h4 className="font-semibold text-green-900 dark:text-green-100">AI Analysis Results</h4>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setShowAIResults(false)}
-                            className="text-green-700 dark:text-green-300"
-                          >
-                            ×
-                          </Button>
-                        </div>
-                        
-                        <div className="space-y-4">
-                          <div>
-                            <h5 className="font-medium text-green-900 dark:text-green-100 mb-2">Summary</h5>
-                            <p className="text-sm text-green-800 dark:text-green-200">{aiResults.summary}</p>
-                          </div>
-                          
-                          <div>
-                            <h5 className="font-medium text-green-900 dark:text-green-100 mb-2">Key Skills</h5>
-                            <div className="space-y-2">
-                              {aiResults.skills.map((skill, index) => (
-                                <div key={index} className="p-2 bg-green-100 dark:bg-green-800 rounded">
-                                  <div className="font-medium text-green-900 dark:text-green-100">{skill.name}</div>
-                                  <div className="text-xs text-green-700 dark:text-green-300">{skill.description}</div>
+                    <Dialog.Root open={showAIResults} onOpenChange={setShowAIResults}>
+                      <Dialog.Portal>
+                        <Dialog.Overlay className="fixed inset-0 bg-black/30 z-40" />
+                        <Dialog.Content className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6 w-full max-w-md">
+                          <Dialog.Title className="text-lg font-bold mb-4">AI Analysis Results</Dialog.Title>
+                          {aiResults && (
+                            <div className="space-y-4">
+                              <div>
+                                <h5 className="font-medium text-green-900 dark:text-green-100 mb-2">Summary</h5>
+                                <p className="text-sm text-green-800 dark:text-green-200">{aiResults.summary}</p>
+                              </div>
+                              <div>
+                                <h5 className="font-medium text-green-900 dark:text-green-100 mb-2">Key Skills</h5>
+                                <div className="space-y-2">
+                                  {aiResults.skills.map((skill, index) => (
+                                    <div key={index} className="p-2 bg-green-100 dark:bg-green-800 rounded">
+                                      <div className="font-medium text-green-900 dark:text-green-100">{skill.name}</div>
+                                      <div className="text-xs text-green-700 dark:text-green-300">{skill.description}</div>
+                                    </div>
+                                  ))}
                                 </div>
-                              ))}
+                              </div>
                             </div>
+                          )}
+                          <div className="flex justify-end mt-6">
+                            <Button variant="ghost" onClick={() => setShowAIResults(false)}>
+                              Close
+                            </Button>
                           </div>
-                        </div>
-                      </div>
-                    )}
+                        </Dialog.Content>
+                      </Dialog.Portal>
+                    </Dialog.Root>
                   </div>
                 </CardContent>
               </Card>
@@ -500,6 +525,7 @@ export default function Dashboard() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
+                                  onClick={() => setEditJob(job)}
                                   className="text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900"
                                 >
                                   <Edit className="w-4 h-4" />
@@ -526,6 +552,110 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      <Dialog.Root open={!!editJob} onOpenChange={open => !open && setEditJob(null)}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 bg-black/30 z-40" />
+          <Dialog.Content className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6 w-full max-w-md">
+            <Dialog.Title className="text-lg font-bold mb-4">Edit Application</Dialog.Title>
+            {editJob && (
+              <Form
+                {...jobForm}
+                defaultValues={{
+                  title: editJob.title,
+                  company: editJob.company,
+                  applicationLink: editJob.applicationLink,
+                  status: editJob.status,
+                }}
+              >
+                <form
+                  onSubmit={jobForm.handleSubmit(async (data) => {
+                    try {
+                      await updateJobMutation.mutateAsync({ ...data, id: editJob.id });
+                      setEditJob(null);
+                      toast({ title: 'Updated!', description: 'Job updated successfully.' });
+                    } catch {
+                      toast({ title: 'Error', description: 'Failed to update job.', variant: 'destructive' });
+                    }
+                  })}
+                  className="space-y-4"
+                >
+                  <FormField
+                    control={jobForm.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Job Title</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={jobForm.control}
+                    name="company"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Company Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={jobForm.control}
+                    name="applicationLink"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Application Link</FormLabel>
+                        <FormControl>
+                          <Input type="url" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={jobForm.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Status</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="applied">Applied</SelectItem>
+                            <SelectItem value="interviewing">Interviewing</SelectItem>
+                            <SelectItem value="rejected">Rejected</SelectItem>
+                            <SelectItem value="offer">Offer</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex justify-end gap-2">
+                    <Button type="button" variant="ghost" onClick={() => setEditJob(null)}>
+                      Cancel
+                    </Button>
+                    <Button type="submit" className="bg-blue-500 hover:bg-blue-600">
+                      Save Changes
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            )}
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </>
   )
 }
