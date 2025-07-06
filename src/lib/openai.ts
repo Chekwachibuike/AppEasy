@@ -1,17 +1,12 @@
-import OpenAI from "openai";
+import Groq from 'groq-sdk';
 import type { AIAnalysisResponse } from "@shared/schema";
 
-// Initialize OpenAI client with API key from environment
-const apiKey = process.env.OPENAI_API_KEY || process.env.OPENAI_KEY;
-if (!apiKey) {
-  throw new Error("OPENAI_API_KEY is required in environment variables");
-}
-const openai = new OpenAI({ apiKey });
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function analyzeJobDescription(jobDescription: string): Promise<AIAnalysisResponse> {
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+    const chatCompletion = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile", // Use the correct model name as needed
       messages: [
         {
           role: "system",
@@ -22,18 +17,23 @@ export async function analyzeJobDescription(jobDescription: string): Promise<AIA
           content: `Please analyze this job description and provide insights:\n\n${jobDescription}`
         }
       ],
-      response_format: { type: "json_object" },
       temperature: 0.7,
       max_tokens: 1000,
     });
 
-    const result = JSON.parse(response.choices[0].message.content || "{}")
-    if (!result.summary || !Array.isArray(result.skills)) {
-      throw new Error("Invalid response format from OpenAI");
+    const result = chatCompletion.choices[0]?.message?.content;
+    let parsedResult;
+    try {
+      parsedResult = JSON.parse(result || '{}');
+    } catch (parseError) {
+      throw new Error('Failed to parse response from Groq: ' + (parseError instanceof Error ? parseError.message : 'Unknown error'));
+    }
+    if (!parsedResult.summary || !Array.isArray(parsedResult.skills)) {
+      throw new Error('Invalid response format from Groq');
     }
     return {
-      summary: result.summary,
-      skills: result.skills.slice(0, 3)
+      summary: parsedResult.summary,
+      skills: parsedResult.skills.slice(0, 3)
     };
   } catch (error) {
     throw new Error(`Failed to analyze job description: ${error instanceof Error ? error.message : 'Unknown error'}`);
