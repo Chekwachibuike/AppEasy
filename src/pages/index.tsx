@@ -559,15 +559,7 @@ export default function Dashboard() {
           <Dialog.Content className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6 w-full max-w-md">
             <Dialog.Title className="text-lg font-bold mb-4">Edit Application</Dialog.Title>
             {editJob && (
-              <Form
-                {...jobForm}
-                defaultValues={{
-                  title: editJob.title,
-                  company: editJob.company,
-                  applicationLink: editJob.applicationLink,
-                  status: editJob.status,
-                }}
-              >
+              <Form {...jobForm}>
                 <form
                   onSubmit={jobForm.handleSubmit(async (data) => {
                     try {
