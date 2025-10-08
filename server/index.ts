@@ -8,7 +8,7 @@ const nextCommand = isWin ? '.\\node_modules\\.bin\\next.cmd' : './node_modules/
 // Start Next.js dev server on port 5000
 const nextDev = spawn(
   nextCommand,
-  ['dev', '--port', '5000', '--hostname', '0.0.0.0'],
+  ['dev', '--port', '5400', '--hostname', '0.0.0.0'],
   {
     stdio: 'inherit',
     shell: isWin

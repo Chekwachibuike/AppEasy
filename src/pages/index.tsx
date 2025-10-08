@@ -196,25 +196,25 @@ export default function Dashboard() {
 
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         {/* Navigation Header */}
-        <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                  <Briefcase className="text-white w-4 h-4" />
+        <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 fixed w-full z-10">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-14">
+              <div className="flex items-center space-x-2 sm:space-x-3">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Briefcase className="text-white w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
-                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">AppEasy</h1>
+                <h1 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">AppEasy</h1>
               </div>
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-600 dark:text-gray-300">Welcome back!</span>
-                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                  <User className="text-blue-600 dark:text-blue-300 w-4 h-4" />
+              <div className="flex items-center space-x-2 sm:space-x-4">
+                <span className="hidden sm:inline text-sm text-gray-600 dark:text-gray-300">Welcome back!</span>
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0">
+                  <User className="text-blue-600 dark:text-blue-300 w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
                 <DarkModeToggle />
                 <Button
                   variant="outline"
                   size="sm"
-                  className="ml-2"
+                  className="text-xs sm:text-sm h-8 px-2 sm:px-3 ml-1"
                   onClick={() => {
                     localStorage.removeItem('loggedIn');
                     localStorage.removeItem('userEmail');
@@ -229,10 +229,10 @@ export default function Dashboard() {
           </div>
         </nav>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-16 pb-8 sm:pt-8">
           {/* Dashboard Stats */}
           <div className="mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
               {isLoading ? (
                 [...Array(4)].map((_, i) => (
                   <Card key={i} className="animate-slide-up border-gray-200 dark:border-gray-700">
@@ -310,7 +310,12 @@ export default function Dashboard() {
                           <FormItem>
                             <FormLabel>Application Link</FormLabel>
                             <FormControl>
-                              <Input type="url" placeholder="https://..." {...field} />
+                              <Input 
+                                type="url" 
+                                placeholder="https://..." 
+                                className="text-sm sm:text-base"
+                                {...field} 
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -343,11 +348,13 @@ export default function Dashboard() {
 
                       <Button 
                         type="submit" 
-                        className="w-full bg-blue-500 hover:bg-blue-600" 
+                        className="w-full bg-blue-500 hover:bg-blue-600 text-sm sm:text-base py-2 h-auto" 
                         disabled={createJobMutation.isPending}
                       >
-                        <PlusCircle className="w-4 h-4 mr-2" />
-                        {createJobMutation.isPending ? "Adding..." : "Add Application"}
+                        <PlusCircle className="w-4 h-4 sm:mr-2 flex-shrink-0" />
+                        <span className="ml-1 sm:ml-0">
+                          {createJobMutation.isPending ? "Adding..." : "Add Application"}
+                        </span>
                       </Button>
                     </form>
                   </Form>
@@ -372,7 +379,7 @@ export default function Dashboard() {
                               <FormControl>
                                 <Textarea 
                                   placeholder="Paste the job description here..."
-                                  className="resize-none"
+                                  className="resize-none text-sm sm:text-base"
                                   rows={4}
                                   {...field}
                                 />
@@ -384,11 +391,13 @@ export default function Dashboard() {
                         
                         <Button 
                           type="submit" 
-                          className="w-full bg-green-500 hover:bg-green-600"
+                          className="w-full bg-green-500 hover:bg-green-600 text-sm sm:text-base py-2 h-auto"
                           disabled={analyzeJobMutation.isPending}
                         >
-                          <Sparkles className="w-4 h-4 mr-2" />
-                          {analyzeJobMutation.isPending ? "Analyzing..." : "Analyze Job"}
+                          <Sparkles className="w-4 h-4 sm:mr-2 flex-shrink-0" />
+                          <span className="ml-1 sm:ml-0">
+                            {analyzeJobMutation.isPending ? "Analyzing..." : "Analyze Job"}
+                          </span>
                         </Button>
                       </form>
                     </Form>
@@ -397,7 +406,7 @@ export default function Dashboard() {
                     <Dialog.Root open={showAIResults} onOpenChange={setShowAIResults}>
                       <Dialog.Portal>
                         <Dialog.Overlay className="fixed inset-0 bg-black/30 z-40" />
-                        <Dialog.Content className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6 w-full max-w-md">
+                        <Dialog.Content className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-900 rounded-lg shadow-lg p-4 sm:p-6 w-[95%] max-w-md max-h-[90vh] overflow-y-auto">
                           <Dialog.Title className="text-lg font-bold mb-4">AI Analysis Results</Dialog.Title>
                           {aiResults && (
                             <div className="space-y-4">
@@ -435,22 +444,22 @@ export default function Dashboard() {
             <div className="lg:col-span-2">
               <Card className="animate-slide-up border-gray-200 dark:border-gray-700">
                 <CardHeader className="border-b border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center justify-between">
-                    <CardTitle>Your Applications</CardTitle>
-                    <div className="flex items-center space-x-3">
-                      <div className="relative">
+                  <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
+                    <CardTitle className="text-lg sm:text-xl">Your Applications</CardTitle>
+                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
+                      <div className="relative flex-1 sm:flex-none">
                         <Input
                           type="text"
                           placeholder="Search applications..."
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
-                          className="pl-10 w-64"
+                          className="pl-10 w-full sm:w-48 md:w-64 text-sm sm:text-base"
                         />
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                       </div>
                       <Select value={statusFilter} onValueChange={setStatusFilter}>
-                        <SelectTrigger className="w-40">
-                          <SelectValue />
+                        <SelectTrigger className="w-full sm:w-40 text-sm sm:text-base">
+                          <SelectValue placeholder="Filter by status" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">All Status</SelectItem>
@@ -472,7 +481,7 @@ export default function Dashboard() {
                       ))}
                     </div>
                   ) : filteredJobs.length === 0 ? (
-                    <div className="text-center py-12">
+                    <div className="text-center py-8 sm:py-12">
                       <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
                         <Filter className="text-gray-400 w-8 h-8" />
                       </div>
@@ -487,70 +496,81 @@ export default function Dashboard() {
                       </p>
                     </div>
                   ) : (
-                    <div className="space-y-4">
-                      {filteredJobs.map((job, index) => {
-                        const statusStyle = statusConfig[job.status] || statusConfig.applied
-                        return (
-                          <div 
-                            key={job.id}
-                            className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow animate-fade-in"
-                            style={{ animationDelay: `${index * 0.1}s` }}
-                          >
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <div className="flex items-center space-x-3 mb-2">
-                                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{job.title}</h3>
-                                  <Badge className={statusStyle.color}>
-                                    {statusStyle.label}
-                                  </Badge>
-                                </div>
-                                <p className="text-gray-600 dark:text-gray-300 mb-2">{job.company}</p>
-                                <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                                  <span className="flex items-center space-x-1">
-                                    <Calendar className="w-3 h-3" />
-                                    <span>{formatDate(job.appliedDate)}</span>
-                                  </span>
-                                  <a 
-                                    href={job.applicationLink} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="flex items-center space-x-1 text-blue-500 hover:text-blue-600 transition-colors"
-                                  >
-                                    <ExternalLink className="w-3 h-3" />
-                                    <span>View Job</span>
-                                  </a>
+                    <div className="space-y-3 sm:space-y-4">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between sm:space-x-4">
+                        <div className="flex-1">
+                          {filteredJobs.map((job, index) => {
+                            const statusStyle = statusConfig[job.status] || statusConfig.applied
+                            return (
+                              <div 
+                                key={job.id}
+                                className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow animate-fade-in"
+                                style={{ animationDelay: `${index * 0.1}s` }}
+                              >
+                                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
+                                  <div className="flex-1">
+                                    <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 mb-2">
+                                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">
+                                        {job.title}
+                                      </h3>
+                                      <Badge className={`${statusStyle.color} mt-1 sm:mt-0 w-fit`}>
+                                        {statusStyle.label}
+                                      </Badge>
+                                    </div>
+                                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-2 line-clamp-1">
+                                      {job.company}
+                                    </p>
+                                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                                      <span className="flex items-center space-x-1">
+                                        <Calendar className="w-3 h-3 flex-shrink-0" />
+                                        <span>{formatDate(job.appliedDate)}</span>
+                                      </span>
+                                      {job.applicationLink && (
+                                        <a 
+                                          href={job.applicationLink} 
+                                          target="_blank" 
+                                          rel="noopener noreferrer"
+                                          className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 flex items-center space-x-1"
+                                        >
+                                          <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                                          <span className="whitespace-nowrap">View Job</span>
+                                        </a>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div className="flex justify-end sm:justify-normal space-x-2 mt-3 sm:mt-0 sm:ml-4">
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm" 
+                                      className="h-8 w-8 p-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                      onClick={() => setEditJob(job)}
+                                      aria-label="Edit job"
+                                    >
+                                      <Edit className="h-4 w-4" />
+                                    </Button>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm" 
+                                      className="h-8 w-8 p-0 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                                      onClick={() => handleDeleteJob(job.id)}
+                                      aria-label="Delete job"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </div>
                                 </div>
                               </div>
-                              <div className="flex items-center space-x-2 ml-4">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => setEditJob(job)}
-                                  className="text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900"
-                                >
-                                  <Edit className="w-4 h-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => handleDeleteJob(job.id)}
-                                  disabled={deleteJobMutation.isPending}
-                                  className="text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        )
-                      })}
+                            )
+                          })}
+                        </div>
+                      </div>
                     </div>
                   )}
                 </CardContent>
               </Card>
             </div>
           </div>
-        </div>
+{{ ... }}
       </div>
 
       <Dialog.Root open={!!editJob} onOpenChange={open => !open && setEditJob(null)}>
