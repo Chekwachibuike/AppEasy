@@ -17,7 +17,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 
-const DarkModeToggle = dynamic(() => import('@/components/ui/button').then(mod => mod.DarkModeToggle), { ssr: false })
+const DarkModeToggle = dynamic(() => import('@/components/ui/button').then(mod => ({ default: mod.DarkModeToggle })), { ssr: false })
 
 // Badge component for status
 function Badge({ children, className }: { children: React.ReactNode, className?: string }) {
@@ -61,6 +61,16 @@ export default function Dashboard() {
     },
   })
 
+  const editJobForm = useForm<InsertJob>({
+    resolver: zodResolver(insertJobSchema),
+    defaultValues: {
+      title: "",
+      company: "",
+      applicationLink: "",
+      status: "applied",
+    },
+  })
+
   const aiForm = useForm<AIAnalysisRequest>({
     resolver: zodResolver(aiAnalysisSchema),
     defaultValues: {
@@ -69,8 +79,15 @@ export default function Dashboard() {
   })
 
   useEffect(() => {
-    setLocalJobs(jobs ?? null)
-  }, [jobs])
+    if (editJob) {
+      editJobForm.reset({
+        title: editJob.title,
+        company: editJob.company,
+        applicationLink: editJob.applicationLink || "",
+        status: editJob.status,
+      })
+    }
+  }, [editJob, editJobForm])
 
   const onSubmitJob = async (data: InsertJob) => {
     try {
@@ -104,10 +121,10 @@ export default function Dashboard() {
   }
 
   const handleDeleteJob = async (jobId: number) => {
-    if (window.confirm("Are you sure you want to delete this job application?")) {
+    if (typeof window !== 'undefined' && window.confirm("Are you sure you want to delete this job application?")) {
       try {
         await deleteJobMutation.mutateAsync(jobId)
-        setLocalJobs((prev) => (prev ?? jobs)?.filter(job => job.id !== jobId) || [])
+        setLocalJobs((prev) => (prev ?? jobs ?? []).filter(job => job.id !== jobId))
         toast({
           title: "Success!",
           description: "Job application deleted successfully.",
@@ -130,7 +147,7 @@ export default function Dashboard() {
     
     if (diffDays === 1) return "Applied yesterday"
     if (diffDays <= 7) return `Applied ${diffDays} days ago`
-    if (diffDays <= 14) return `Applied ${Math.ceil(diffDays / 7)} week ago`
+    if (diffDays <= 14) return `Applied ${Math.ceil(diffDays / 7)} week${Math.ceil(diffDays / 7) === 1 ? '' : 's'} ago`
     return `Applied ${Math.ceil(diffDays / 7)} weeks ago`
   }
 
@@ -188,7 +205,7 @@ export default function Dashboard() {
   ]
 
   return (
-    <>
+<div>
       <Head>
         <title>AppEasy - Manage Your Applications</title>
         <meta name="description" content="Track your job applications with AI-powered analysis and insights" />
@@ -197,24 +214,24 @@ export default function Dashboard() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         {/* Navigation Header */}
         <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 fixed w-full z-10">
-          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-14">
-              <div className="flex items-center space-x-2 sm:space-x-3">
-                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
+          <div className="max-w-7xl mx-auto px-2 sm:px-3 md:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-12 sm:h-14">
+              <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3">
+                <div className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
                   <Briefcase className="text-white w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
                 <h1 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">AppEasy</h1>
               </div>
-              <div className="flex items-center space-x-2 sm:space-x-4">
-                <span className="hidden sm:inline text-sm text-gray-600 dark:text-gray-300">Welcome back!</span>
-                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4">
+                <span className="hidden xs:inline sm:inline text-sm text-gray-600 dark:text-gray-300">Welcome back!</span>
+                <div className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0">
                   <User className="text-blue-600 dark:text-blue-300 w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
                 <DarkModeToggle />
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-xs sm:text-sm h-8 px-2 sm:px-3 ml-1"
+                  className="text-xs sm:text-sm px-2 py-1 sm:px-3 sm:py-2"
                   onClick={() => {
                     localStorage.removeItem('loggedIn');
                     localStorage.removeItem('userEmail');
@@ -229,14 +246,14 @@ export default function Dashboard() {
           </div>
         </nav>
 
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-16 pb-8 sm:pt-8">
+        <div className="max-w-7xl mx-auto px-2 sm:px-3 md:px-6 lg:px-8 pt-16 pb-8 sm:pt-8">
           {/* Dashboard Stats */}
           <div className="mb-8">
-            <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-4">
               {isLoading ? (
                 [...Array(4)].map((_, i) => (
                   <Card key={i} className="animate-slide-up border-gray-200 dark:border-gray-700">
-                    <CardContent className="p-6">
+                    <CardContent className="p-4 sm:p-5 md:p-6">
                       <Skeleton className="h-20 w-full" />
                     </CardContent>
                   </Card>
@@ -244,14 +261,14 @@ export default function Dashboard() {
               ) : (
                 stats.map((stat, index) => (
                   <Card key={stat.title} className="animate-slide-up border-gray-200 dark:border-gray-700" style={{ animationDelay: `${index * 0.1}s` }}>
-                    <CardContent className="p-6">
+                    <CardContent className="p-4 sm:p-5 md:p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{stat.title}</p>
-                          <p className="text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+                          <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300">{stat.title}</p>
+                          <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
                         </div>
-                        <div className={`w-12 h-12 ${stat.bgColor} rounded-lg flex items-center justify-center`}>
-                          <stat.icon className={`${stat.color} w-6 h-6`} />
+                        <div className={`w-10 h-10 sm:w-12 sm:h-12 ${stat.bgColor} rounded-lg flex items-center justify-center`}>
+                          <stat.icon className={`${stat.color} w-5 h-5 sm:w-6 sm:h-6`} />
                         </div>
                       </div>
                     </CardContent>
@@ -267,14 +284,14 @@ export default function Dashboard() {
             <div className="lg:col-span-1">
               <Card className="animate-slide-up border-gray-200 dark:border-gray-700">
                 <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <PlusCircle className="text-blue-500 w-5 h-5" />
+                  <CardTitle className="flex items-center space-x-1 sm:space-x-2">
+                    <PlusCircle className="text-blue-500 w-4 h-4 sm:w-5 sm:h-5" />
                     <span>Add New Application</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Form {...jobForm}>
-                    <form onSubmit={jobForm.handleSubmit(onSubmitJob)} className="space-y-4">
+                    <form onSubmit={jobForm.handleSubmit(onSubmitJob)} className="space-y-3 sm:space-y-4">
                       <FormField
                         control={jobForm.control}
                         name="title"
@@ -351,7 +368,7 @@ export default function Dashboard() {
                         className="w-full bg-blue-500 hover:bg-blue-600 text-sm sm:text-base py-2 h-auto" 
                         disabled={createJobMutation.isPending}
                       >
-                        <PlusCircle className="w-4 h-4 sm:mr-2 flex-shrink-0" />
+                        <PlusCircle className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                         <span className="ml-1 sm:ml-0">
                           {createJobMutation.isPending ? "Adding..." : "Add Application"}
                         </span>
@@ -363,13 +380,13 @@ export default function Dashboard() {
 
                   {/* AI Analysis Section */}
                   <div>
-                    <div className="flex items-center space-x-2 mb-4">
-                      <Bot className="text-green-500 w-5 h-5" />
-                      <h3 className="text-md font-semibold text-gray-900 dark:text-white">AI Job Analysis</h3>
+                    <div className="flex items-center space-x-1 sm:space-x-2 mb-4">
+                      <Bot className="text-green-500 w-4 h-4 sm:w-5 sm:h-5" />
+                      <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white">AI Job Analysis</h3>
                     </div>
                     
                     <Form {...aiForm}>
-                      <form onSubmit={aiForm.handleSubmit(onAnalyzeJob)} className="space-y-4">
+                      <form onSubmit={aiForm.handleSubmit(onAnalyzeJob)} className="space-y-3 sm:space-y-4">
                         <FormField
                           control={aiForm.control}
                           name="jobDescription"
@@ -394,7 +411,7 @@ export default function Dashboard() {
                           className="w-full bg-green-500 hover:bg-green-600 text-sm sm:text-base py-2 h-auto"
                           disabled={analyzeJobMutation.isPending}
                         >
-                          <Sparkles className="w-4 h-4 sm:mr-2 flex-shrink-0" />
+                          <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                           <span className="ml-1 sm:ml-0">
                             {analyzeJobMutation.isPending ? "Analyzing..." : "Analyze Job"}
                           </span>
@@ -406,10 +423,10 @@ export default function Dashboard() {
                     <Dialog.Root open={showAIResults} onOpenChange={setShowAIResults}>
                       <Dialog.Portal>
                         <Dialog.Overlay className="fixed inset-0 bg-black/30 z-40" />
-                        <Dialog.Content className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-900 rounded-lg shadow-lg p-4 sm:p-6 w-[95%] max-w-md max-h-[90vh] overflow-y-auto">
+                        <Dialog.Content className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-900 rounded-lg shadow-lg p-4 sm:p-5 md:p-6 w-[95%] max-w-md max-h-[90vh] overflow-y-auto">
                           <Dialog.Title className="text-lg font-bold mb-4">AI Analysis Results</Dialog.Title>
                           {aiResults && (
-                            <div className="space-y-4">
+                            <div className="space-y-3 sm:space-y-4">
                               <div>
                                 <h5 className="font-medium text-green-900 dark:text-green-100 mb-2">Summary</h5>
                                 <p className="text-sm text-green-800 dark:text-green-200">{aiResults.summary}</p>
@@ -417,7 +434,7 @@ export default function Dashboard() {
                               <div>
                                 <h5 className="font-medium text-green-900 dark:text-green-100 mb-2">Key Skills</h5>
                                 <div className="space-y-2">
-                                  {aiResults.skills.map((skill, index) => (
+                                  {aiResults.skills?.map((skill, index) => (
                                     <div key={index} className="p-2 bg-green-100 dark:bg-green-800 rounded">
                                       <div className="font-medium text-green-900 dark:text-green-100">{skill.name}</div>
                                       <div className="text-xs text-green-700 dark:text-green-300">{skill.description}</div>
@@ -473,9 +490,9 @@ export default function Dashboard() {
                   </div>
                 </CardHeader>
 
-                <CardContent className="p-6">
+                <CardContent className="p-4 sm:p-5 md:p-6">
                   {isLoading ? (
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {[...Array(3)].map((_, i) => (
                         <Skeleton key={i} className="h-24 w-full" />
                       ))}
@@ -570,104 +587,9 @@ export default function Dashboard() {
               </Card>
             </div>
           </div>
-{{ ... }}
-      </div>
+        </div>
 
-      <Dialog.Root open={!!editJob} onOpenChange={open => !open && setEditJob(null)}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/30 z-40" />
-          <Dialog.Content className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6 w-full max-w-md">
-            <Dialog.Title className="text-lg font-bold mb-4">Edit Application</Dialog.Title>
-            {editJob && (
-              <Form {...jobForm}>
-                <form
-                  onSubmit={jobForm.handleSubmit(async (data) => {
-                    try {
-                      await updateJobMutation.mutateAsync({ ...data, id: editJob.id });
-                      setEditJob(null);
-                      toast({ title: 'Updated!', description: 'Job updated successfully.' });
-                    } catch {
-                      toast({ title: 'Error', description: 'Failed to update job.', variant: 'destructive' });
-                    }
-                  })}
-                  className="space-y-4"
-                >
-                  <FormField
-                    control={jobForm.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Job Title</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={jobForm.control}
-                    name="company"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Company Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={jobForm.control}
-                    name="applicationLink"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Application Link</FormLabel>
-                        <FormControl>
-                          <Input type="url" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={jobForm.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Status</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="applied">Applied</SelectItem>
-                            <SelectItem value="interviewing">Interviewing</SelectItem>
-                            <SelectItem value="rejected">Rejected</SelectItem>
-                            <SelectItem value="offer">Offer</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <div className="flex justify-end gap-2">
-                    <Button type="button" variant="ghost" onClick={() => setEditJob(null)}>
-                      Cancel
-                    </Button>
-                    <Button type="submit" className="bg-blue-500 hover:bg-blue-600">
-                      Save Changes
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            )}
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
-    </>
+      </div>
+    </div>
   )
 }
