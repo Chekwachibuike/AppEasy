@@ -20,14 +20,23 @@ export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
   useEffect(() => {
     if (typeof window === 'undefined') return
+
+    // Check authentication status immediately
     const isLoggedIn = localStorage.getItem('loggedIn') === 'true'
-    if (!isLoggedIn && router.pathname !== '/login' && router.pathname !== '/signup') {
+    const currentPath = router.pathname
+
+    // If not logged in and trying to access protected routes, redirect to login
+    if (!isLoggedIn && currentPath !== '/login' && currentPath !== '/signup') {
       router.replace('/login')
+      return
     }
-    if (isLoggedIn && (router.pathname === '/login' || router.pathname === '/signup')) {
+
+    // If logged in and on auth pages, redirect to dashboard
+    if (isLoggedIn && (currentPath === '/login' || currentPath === '/signup')) {
       router.replace('/')
+      return
     }
-  }, [router])
+  }, [router.pathname])
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>

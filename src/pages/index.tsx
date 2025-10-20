@@ -9,17 +9,16 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { useToast } from '@/hooks/use-toast'
-import { insertJobSchema, aiAnalysisSchema } from '@shared/schema'
-import { useJobs, useCreateJob, useAnalyzeJob, useUpdateJob, useDeleteJob } from '@/hooks/use-jobs'
-import type { InsertJob, AIAnalysisRequest, Job, AIAnalysisResponse } from '@shared/schema'
 import * as Dialog from '@radix-ui/react-dialog'
+import { useJobs, useCreateJob, useAnalyzeJob, useUpdateJob, useDeleteJob } from '@/hooks/use-jobs'
+import { useToast } from '@/hooks/use-toast'
+import { useIsMobile } from '@/hooks/use-is-mobile'
+import { insertJobSchema, aiAnalysisSchema } from '@shared/schema'
+import type { InsertJob, AIAnalysisRequest, Job, AIAnalysisResponse } from '@shared/schema'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 
 const DarkModeToggle = dynamic(() => import('@/components/ui/button').then(mod => ({ default: mod.DarkModeToggle })), { ssr: false })
-
-// Badge component for status
 function Badge({ children, className }: { children: React.ReactNode, className?: string }) {
   return (
     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${className}`}>
@@ -38,6 +37,7 @@ function Skeleton({ className }: { className?: string }) {
 export default function Dashboard() {
   const { data: jobs, isLoading } = useJobs()
   const { toast } = useToast()
+  const isMobile = useIsMobile()
   const [showAIResults, setShowAIResults] = useState(false)
   const [aiResults, setAIResults] = useState<AIAnalysisResponse | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
@@ -211,9 +211,9 @@ export default function Dashboard() {
         <meta name="description" content="Track your job applications with AI-powered analysis and insights" />
       </Head>
 
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 ${isMobile ? 'pt-12' : 'pt-14'}`}>
         {/* Navigation Header */}
-        <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 fixed w-full z-10">
+        <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 fixed w-full z-10 top-0">
           <div className="max-w-7xl mx-auto px-2 sm:px-3 md:px-6 lg:px-8">
             <div className="flex justify-between items-center h-12 sm:h-14">
               <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3">
@@ -223,7 +223,7 @@ export default function Dashboard() {
                 <h1 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">AppEasy</h1>
               </div>
               <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4">
-                <span className="hidden xs:inline sm:inline text-sm text-gray-600 dark:text-gray-300">Welcome back!</span>
+                {!isMobile && <span className="text-sm text-gray-600 dark:text-gray-300">Welcome back!</span>}
                 <div className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0">
                   <User className="text-blue-600 dark:text-blue-300 w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
@@ -239,14 +239,14 @@ export default function Dashboard() {
                     router.replace('/login');
                   }}
                 >
-                  Log out
+                  {isMobile ? 'Logout' : 'Log out'}
                 </Button>
               </div>
             </div>
           </div>
         </nav>
 
-        <div className="max-w-7xl mx-auto px-2 sm:px-3 md:px-6 lg:px-8 pt-16 pb-8 sm:pt-8">
+        <div className="max-w-7xl mx-auto px-2 sm:px-3 md:px-6 lg:px-8 pb-8 sm:pt-8">
           {/* Dashboard Stats */}
           <div className="mb-8">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-4">
@@ -279,9 +279,9 @@ export default function Dashboard() {
           </div>
 
           {/* Main Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className={`grid gap-8 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-3'}`}>
             {/* Job Application Form */}
-            <div className="lg:col-span-1">
+            <div className={`${isMobile ? '' : 'lg:col-span-1'}`}>
               <Card className="animate-slide-up border-gray-200 dark:border-gray-700">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-1 sm:space-x-2">
@@ -423,7 +423,7 @@ export default function Dashboard() {
                     <Dialog.Root open={showAIResults} onOpenChange={setShowAIResults}>
                       <Dialog.Portal>
                         <Dialog.Overlay className="fixed inset-0 bg-black/30 z-40" />
-                        <Dialog.Content className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-900 rounded-lg shadow-lg p-4 sm:p-5 md:p-6 w-[95%] max-w-md max-h-[90vh] overflow-y-auto">
+                        <Dialog.Content className={`fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-900 rounded-lg shadow-lg p-4 sm:p-5 md:p-6 w-[95%] max-w-md max-h-[90vh] overflow-y-auto ${isMobile ? 'w-full h-full max-w-none max-h-none rounded-none p-6' : ''}`}>
                           <Dialog.Title className="text-lg font-bold mb-4">AI Analysis Results</Dialog.Title>
                           {aiResults && (
                             <div className="space-y-3 sm:space-y-4">
