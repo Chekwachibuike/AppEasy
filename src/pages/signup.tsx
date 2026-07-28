@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { Logo } from '@/components/Logo';
 
 const signupSchema = z.object({
   email: z.string().email('Enter a valid email'),
@@ -43,12 +44,15 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <Head>
         <title>Sign Up - AppEasy</title>
       </Head>
-      <div className="w-full max-w-md p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">Sign up for AppEasy</h2>
+      <div className="w-full max-w-md p-8 bg-card border border-border rounded-xl shadow-sm">
+        <div className="flex justify-center mb-6">
+          <Logo size={30} />
+        </div>
+        <h2 className="text-xl font-semibold mb-6 text-center text-foreground">Create your account</h2>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -82,9 +86,9 @@ export default function SignupPage() {
             </Button>
           </form>
         </Form>
-        <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-300">
+        <p className="mt-4 text-center text-sm text-muted-foreground">
           Already have an account?{' '}
-          <Link href="/login" className="text-blue-600 hover:underline dark:text-blue-400">Sign in</Link>
+          <Link href="/login" className="text-foreground font-medium hover:underline">Sign in</Link>
         </p>
       </div>
     </div>

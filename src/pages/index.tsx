@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Briefcase, User, PlusCircle, Bot, Sparkles, Calendar, ExternalLink, Edit, Trash2, ClipboardList, Handshake, Trophy, TrendingUp, Search, Filter } from 'lucide-react'
+import { User, PlusCircle, Bot, Sparkles, Calendar, ExternalLink, Edit, Trash2, ClipboardList, Handshake, Trophy, TrendingUp, Search, Filter } from 'lucide-react'
+import { Logo } from '@/components/Logo'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -152,10 +153,10 @@ export default function Dashboard() {
   }
 
   const statusConfig = {
-    applied: { color: "bg-gray-100 text-gray-700", label: "Applied" },
-    interviewing: { color: "bg-amber-100 text-amber-700", label: "Interviewing" },
-    rejected: { color: "bg-red-100 text-red-700", label: "Rejected" },
-    offer: { color: "bg-green-100 text-green-700", label: "Offer" },
+    applied: { color: "bg-muted text-muted-foreground", label: "Applied" },
+    interviewing: { color: "bg-status-interviewing/10 text-status-interviewing", label: "Interviewing" },
+    rejected: { color: "bg-status-rejected/10 text-status-rejected", label: "Rejected" },
+    offer: { color: "bg-status-offer/10 text-status-offer", label: "Offer" },
   }
 
   const filteredJobs = (localJobs ?? jobs)?.filter(job => {
@@ -178,29 +179,29 @@ export default function Dashboard() {
       title: "Total Applications",
       value: totalApplications,
       icon: ClipboardList,
-      color: "text-blue-600",
-      bgColor: "bg-blue-100",
+      color: "text-foreground",
+      bgColor: "bg-muted",
     },
     {
       title: "Interviewing",
       value: interviewing,
       icon: Handshake,
-      color: "text-amber-600",
-      bgColor: "bg-amber-100",
+      color: "text-status-interviewing",
+      bgColor: "bg-status-interviewing/10",
     },
     {
       title: "Offers",
       value: offers,
       icon: Trophy,
-      color: "text-green-600",
-      bgColor: "bg-green-100",
+      color: "text-status-offer",
+      bgColor: "bg-status-offer/10",
     },
     {
       title: "Response Rate",
       value: `${responseRate}%`,
       icon: TrendingUp,
-      color: "text-gray-600",
-      bgColor: "bg-gray-100",
+      color: "text-foreground",
+      bgColor: "bg-muted",
     },
   ]
 
@@ -211,21 +212,16 @@ export default function Dashboard() {
         <meta name="description" content="Track your job applications with AI-powered analysis and insights" />
       </Head>
 
-      <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 ${isMobile ? 'pt-12' : 'pt-14'}`}>
+      <div className={`min-h-screen bg-background ${isMobile ? 'pt-12' : 'pt-14'}`}>
         {/* Navigation Header */}
-        <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 fixed w-full z-10 top-0">
+        <nav className="bg-card shadow-sm border-b border-border fixed w-full z-10 top-0">
           <div className="max-w-7xl mx-auto px-2 sm:px-3 md:px-6 lg:px-8">
             <div className="flex justify-between items-center h-12 sm:h-14">
-              <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3">
-                <div className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Briefcase className="text-white w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                </div>
-                <h1 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">AppEasy</h1>
-              </div>
+              <Logo size={24} />
               <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4">
-                {!isMobile && <span className="text-sm text-gray-600 dark:text-gray-300">Welcome back!</span>}
-                <div className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0">
-                  <User className="text-blue-600 dark:text-blue-300 w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                {!isMobile && <span className="text-sm text-muted-foreground">Welcome back!</span>}
+                <div className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
+                  <User className="text-muted-foreground w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
                 <DarkModeToggle />
                 <Button
@@ -252,7 +248,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-4">
               {isLoading ? (
                 [...Array(4)].map((_, i) => (
-                  <Card key={i} className="animate-slide-up border-gray-200 dark:border-gray-700">
+                  <Card key={i} className="animate-slide-up border-border">
                     <CardContent className="p-4 sm:p-5 md:p-6">
                       <Skeleton className="h-20 w-full" />
                     </CardContent>
@@ -260,12 +256,12 @@ export default function Dashboard() {
                 ))
               ) : (
                 stats.map((stat, index) => (
-                  <Card key={stat.title} className="animate-slide-up border-gray-200 dark:border-gray-700" style={{ animationDelay: `${index * 0.1}s` }}>
+                  <Card key={stat.title} className="animate-slide-up border-border" style={{ animationDelay: `${index * 0.1}s` }}>
                     <CardContent className="p-4 sm:p-5 md:p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300">{stat.title}</p>
-                          <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+                          <p className="text-xs sm:text-sm font-medium text-muted-foreground">{stat.title}</p>
+                          <p className="text-xl sm:text-2xl font-bold text-foreground">{stat.value}</p>
                         </div>
                         <div className={`w-10 h-10 sm:w-12 sm:h-12 ${stat.bgColor} rounded-lg flex items-center justify-center`}>
                           <stat.icon className={`${stat.color} w-5 h-5 sm:w-6 sm:h-6`} />
@@ -282,10 +278,10 @@ export default function Dashboard() {
           <div className={`grid gap-8 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-3'}`}>
             {/* Job Application Form */}
             <div className={`${isMobile ? '' : 'lg:col-span-1'}`}>
-              <Card className="animate-slide-up border-gray-200 dark:border-gray-700">
+              <Card className="animate-slide-up border-border">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-1 sm:space-x-2">
-                    <PlusCircle className="text-blue-500 w-4 h-4 sm:w-5 sm:h-5" />
+                    <PlusCircle className="text-foreground w-4 h-4 sm:w-5 sm:h-5" />
                     <span>Add New Application</span>
                   </CardTitle>
                 </CardHeader>
@@ -365,7 +361,7 @@ export default function Dashboard() {
 
                       <Button 
                         type="submit" 
-                        className="w-full bg-blue-500 hover:bg-blue-600 text-sm sm:text-base py-2 h-auto" 
+                        className="w-full text-sm sm:text-base py-2 h-auto"
                         disabled={createJobMutation.isPending}
                       >
                         <PlusCircle className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
@@ -376,13 +372,13 @@ export default function Dashboard() {
                     </form>
                   </Form>
 
-                  <div className="my-6 border-t border-gray-200 dark:border-gray-700"></div>
+                  <div className="my-6 border-t border-border"></div>
 
                   {/* AI Analysis Section */}
                   <div>
                     <div className="flex items-center space-x-1 sm:space-x-2 mb-4">
-                      <Bot className="text-green-500 w-4 h-4 sm:w-5 sm:h-5" />
-                      <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white">AI Job Analysis</h3>
+                      <Bot className="text-status-offer w-4 h-4 sm:w-5 sm:h-5" />
+                      <h3 className="text-sm sm:text-base font-semibold text-foreground">AI Job Analysis</h3>
                     </div>
                     
                     <Form {...aiForm}>
@@ -406,9 +402,10 @@ export default function Dashboard() {
                           )}
                         />
                         
-                        <Button 
-                          type="submit" 
-                          className="w-full bg-green-500 hover:bg-green-600 text-sm sm:text-base py-2 h-auto"
+                        <Button
+                          type="submit"
+                          variant="secondary"
+                          className="w-full text-sm sm:text-base py-2 h-auto"
                           disabled={analyzeJobMutation.isPending}
                         >
                           <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
@@ -423,21 +420,24 @@ export default function Dashboard() {
                     <Dialog.Root open={showAIResults} onOpenChange={setShowAIResults}>
                       <Dialog.Portal>
                         <Dialog.Overlay className="fixed inset-0 bg-black/30 z-40" />
-                        <Dialog.Content className={`fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-900 rounded-lg shadow-lg p-4 sm:p-5 md:p-6 w-[95%] max-w-md max-h-[90vh] overflow-y-auto ${isMobile ? 'w-full h-full max-w-none max-h-none rounded-none p-6' : ''}`}>
-                          <Dialog.Title className="text-lg font-bold mb-4">AI Analysis Results</Dialog.Title>
+                        <Dialog.Content className={`fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card border border-border rounded-lg shadow-lg p-4 sm:p-5 md:p-6 w-[95%] max-w-md max-h-[90vh] overflow-y-auto ${isMobile ? 'w-full h-full max-w-none max-h-none rounded-none p-6' : ''}`}>
+                          <Dialog.Title className="text-lg font-bold mb-4 flex items-center gap-2">
+                            <Sparkles className="text-status-offer w-4 h-4" />
+                            AI Analysis Results
+                          </Dialog.Title>
                           {aiResults && (
                             <div className="space-y-3 sm:space-y-4">
                               <div>
-                                <h5 className="font-medium text-green-900 dark:text-green-100 mb-2">Summary</h5>
-                                <p className="text-sm text-green-800 dark:text-green-200">{aiResults.summary}</p>
+                                <h5 className="font-medium text-foreground mb-2">Summary</h5>
+                                <p className="text-sm text-muted-foreground">{aiResults.summary}</p>
                               </div>
                               <div>
-                                <h5 className="font-medium text-green-900 dark:text-green-100 mb-2">Key Skills</h5>
+                                <h5 className="font-medium text-foreground mb-2">Key Skills</h5>
                                 <div className="space-y-2">
                                   {aiResults.skills?.map((skill, index) => (
-                                    <div key={index} className="p-2 bg-green-100 dark:bg-green-800 rounded">
-                                      <div className="font-medium text-green-900 dark:text-green-100">{skill.name}</div>
-                                      <div className="text-xs text-green-700 dark:text-green-300">{skill.description}</div>
+                                    <div key={index} className="p-2 bg-muted rounded">
+                                      <div className="font-medium text-foreground">{skill.name}</div>
+                                      <div className="text-xs text-muted-foreground">{skill.description}</div>
                                     </div>
                                   ))}
                                 </div>
@@ -459,8 +459,8 @@ export default function Dashboard() {
 
             {/* Job Applications List */}
             <div className="lg:col-span-2">
-              <Card className="animate-slide-up border-gray-200 dark:border-gray-700">
-                <CardHeader className="border-b border-gray-200 dark:border-gray-700">
+              <Card className="animate-slide-up border-border">
+                <CardHeader className="border-b border-border">
                   <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
                     <CardTitle className="text-lg sm:text-xl">Your Applications</CardTitle>
                     <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
@@ -472,7 +472,7 @@ export default function Dashboard() {
                           onChange={(e) => setSearchQuery(e.target.value)}
                           className="pl-10 w-full sm:w-48 md:w-64 text-sm sm:text-base"
                         />
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                       </div>
                       <Select value={statusFilter} onValueChange={setStatusFilter}>
                         <SelectTrigger className="w-full sm:w-40 text-sm sm:text-base">
@@ -499,13 +499,13 @@ export default function Dashboard() {
                     </div>
                   ) : filteredJobs.length === 0 ? (
                     <div className="text-center py-8 sm:py-12">
-                      <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Filter className="text-gray-400 w-8 h-8" />
+                      <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Filter className="text-muted-foreground w-8 h-8" />
                       </div>
-                      <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                      <h3 className="text-lg font-medium text-foreground mb-2">
                         {totalApplications === 0 ? "No applications yet" : "No matching applications"}
                       </h3>
-                      <p className="text-gray-500 dark:text-gray-400 mb-4">
+                      <p className="text-muted-foreground mb-4">
                         {totalApplications === 0 
                           ? "Start by adding your first job application." 
                           : "Try adjusting your search or filter criteria."
@@ -521,23 +521,23 @@ export default function Dashboard() {
                             return (
                               <div 
                                 key={job.id}
-                                className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow animate-fade-in"
+                                className="border border-border rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow animate-fade-in"
                                 style={{ animationDelay: `${index * 0.1}s` }}
                               >
                                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
                                   <div className="flex-1">
                                     <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 mb-2">
-                                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">
+                                      <h3 className="text-base sm:text-lg font-semibold text-foreground line-clamp-1">
                                         {job.title}
                                       </h3>
                                       <Badge className={`${statusStyle.color} mt-1 sm:mt-0 w-fit`}>
                                         {statusStyle.label}
                                       </Badge>
                                     </div>
-                                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-2 line-clamp-1">
+                                    <p className="text-sm sm:text-base text-muted-foreground mb-2 line-clamp-1">
                                       {job.company}
                                     </p>
-                                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs sm:text-sm text-muted-foreground">
                                       <span className="flex items-center space-x-1">
                                         <Calendar className="w-3 h-3 flex-shrink-0" />
                                         <span>{formatDate(job.appliedDate)}</span>
@@ -547,7 +547,7 @@ export default function Dashboard() {
                                           href={job.applicationLink} 
                                           target="_blank" 
                                           rel="noopener noreferrer"
-                                          className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 flex items-center space-x-1"
+                                          className="text-foreground underline-offset-2 hover:underline flex items-center space-x-1"
                                         >
                                           <ExternalLink className="w-3 h-3 flex-shrink-0" />
                                           <span className="whitespace-nowrap">View Job</span>
@@ -559,7 +559,7 @@ export default function Dashboard() {
                                     <Button 
                                       variant="ghost" 
                                       size="sm" 
-                                      className="h-8 w-8 p-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                      className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
                                       onClick={() => setEditJob(job)}
                                       aria-label="Edit job"
                                     >
@@ -568,7 +568,7 @@ export default function Dashboard() {
                                     <Button 
                                       variant="ghost" 
                                       size="sm" 
-                                      className="h-8 w-8 p-0 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                                      className="h-8 w-8 p-0 text-destructive hover:text-destructive/80"
                                       onClick={() => handleDeleteJob(job.id)}
                                       aria-label="Delete job"
                                     >
