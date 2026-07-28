@@ -3,60 +3,64 @@
 @tailwind utilities;
 
 :root {
+  /* True neutral (0% saturation) monochrome base - primary is an inverted
+     foreground (near-black on light, near-white on dark) rather than a hue,
+     matching the Attio/Linear/Vercel school of monochrome product design.
+     Color is reserved for semantic states only (status badges, destructive). */
   --background: 0 0% 100%;
-  --foreground: 20 14.3% 4.1%;
-  --muted: 60 4.8% 95.9%;
-  --muted-foreground: 25 5.3% 44.7%;
+  --foreground: 0 0% 9%;
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 45%;
   --popover: 0 0% 100%;
-  --popover-foreground: 20 14.3% 4.1%;
+  --popover-foreground: 0 0% 9%;
   --card: 0 0% 100%;
-  --card-foreground: 20 14.3% 4.1%;
-  --border: 20 5.9% 90%;
-  --input: 20 5.9% 90%;
-  --primary: 207 90% 54%;
-  --primary-foreground: 211 100% 99%;
-  --secondary: 60 4.8% 95.9%;
-  --secondary-foreground: 24 9.8% 10%;
-  --accent: 60 4.8% 95.9%;
-  --accent-foreground: 24 9.8% 10%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 60 9.1% 97.8%;
-  --ring: 20 14.3% 4.1%;
-  --radius: 0.5rem;
+  --card-foreground: 0 0% 9%;
+  --border: 0 0% 90%;
+  --input: 0 0% 90%;
+  --primary: 0 0% 9%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 0 0% 96%;
+  --secondary-foreground: 0 0% 9%;
+  --accent: 0 0% 94%;
+  --accent-foreground: 0 0% 9%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 0 0% 9%;
+  --radius: 0.75rem;
 
-  /* Custom psychology-driven colors */
-  --trust-blue: hsl(207, 90%, 54%);
-  --trust-blue-light: hsl(207, 90%, 94%);
-  --growth-green: hsl(142, 71%, 45%);
-  --growth-green-light: hsl(142, 71%, 92%);
-  --motivation-orange: hsl(25, 95%, 53%);
-  --motivation-orange-light: hsl(25, 95%, 94%);
-  --warning-amber: hsl(45, 93%, 47%);
-  --warning-amber-light: hsl(45, 93%, 94%);
-  --danger-red: hsl(0, 84%, 60%);
-  --danger-red-light: hsl(0, 84%, 94%);
+  /* Status accents - used sparingly (small dots/badges only), never as
+     large fills, so the monochrome base stays dominant. */
+  --status-applied: 217 91% 60%;
+  --status-interviewing: 38 92% 50%;
+  --status-offer: 142 71% 45%;
+  --status-rejected: 0 72% 51%;
 }
 
 .dark {
-  --background: 240 10% 3.9%;
-  --foreground: 0 0% 98%;
-  --muted: 240 3.7% 15.9%;
-  --muted-foreground: 240 5% 64.9%;
-  --popover: 240 10% 3.9%;
-  --popover-foreground: 0 0% 98%;
-  --card: 240 10% 3.9%;
-  --card-foreground: 0 0% 98%;
-  --border: 240 3.7% 15.9%;
-  --input: 240 3.7% 15.9%;
-  --primary: 207 90% 54%;
-  --primary-foreground: 211 100% 99%;
-  --secondary: 240 3.7% 15.9%;
-  --secondary-foreground: 0 0% 98%;
-  --accent: 240 3.7% 15.9%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 62.8% 30.6%;
+  --background: 0 0% 7%;
+  --foreground: 0 0% 96%;
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 60%;
+  --popover: 0 0% 10%;
+  --popover-foreground: 0 0% 96%;
+  --card: 0 0% 10%;
+  --card-foreground: 0 0% 96%;
+  --border: 0 0% 18%;
+  --input: 0 0% 18%;
+  --primary: 0 0% 96%;
+  --primary-foreground: 0 0% 9%;
+  --secondary: 0 0% 15%;
+  --secondary-foreground: 0 0% 96%;
+  --accent: 0 0% 18%;
+  --accent-foreground: 0 0% 96%;
+  --destructive: 0 62% 45%;
   --destructive-foreground: 0 0% 98%;
-  --ring: 240 4.9% 83.9%;
+  --ring: 0 0% 80%;
+
+  --status-applied: 217 91% 65%;
+  --status-interviewing: 38 92% 60%;
+  --status-offer: 142 71% 55%;
+  --status-rejected: 0 72% 60%;
 }
 
 @layer base {

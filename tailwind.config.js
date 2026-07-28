@@ -51,6 +51,12 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        status: {
+          applied: "hsl(var(--status-applied))",
+          interviewing: "hsl(var(--status-interviewing))",
+          offer: "hsl(var(--status-offer))",
+          rejected: "hsl(var(--status-rejected))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
