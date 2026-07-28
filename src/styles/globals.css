@@ -84,7 +84,7 @@
     inset: 0;
     z-index: 0;
     background: inherit;
-    opacity: 0.08;
+    opacity: 0.072;
     pointer-events: none;
   }
 }
