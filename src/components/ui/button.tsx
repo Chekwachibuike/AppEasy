@@ -60,10 +60,10 @@ export function DarkModeToggle() {
     <button
       type="button"
       aria-label="Toggle dark mode"
-      className="ml-2 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+      className="ml-2 p-2 rounded-full hover:bg-accent transition-colors"
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
     >
-      {theme === 'dark' ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-800" />}
+      {theme === 'dark' ? <Sun className="w-5 h-5 text-foreground" /> : <Moon className="w-5 h-5 text-foreground" />}
     </button>
   );
 }
